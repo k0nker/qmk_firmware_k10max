@@ -118,6 +118,28 @@ void add_ripple(uint8_t row, uint8_t col) {
     }
 }
 
+void add_ripple_for_keyrecord(uint8_t trow, uint8_t tcol) {
+    uint8_t led_index = g_led_config.matrix_co[trow][tcol];
+    for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
+        for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+            if (g_led_config.matrix_co[row][col] == led_index) {
+                if (led_index == 74) {
+                    // Special case for the 74th LED, which is a special extra on the far right
+                    add_ripple(3,20);
+                }
+                else if (led_index == 75) {
+                    // Special case for the 75th LED, which is a special extra on the far right
+                    add_ripple(5,20);
+                }
+                else {
+                add_ripple(row, col);
+                }
+                return;
+            }
+        }
+    }
+}
+
 /*
  * This is where you can set what type of macro each keycode will run.
  * You can set it to toggle, hold, or run once by placing the keycode
@@ -128,7 +150,8 @@ void add_ripple(uint8_t row, uint8_t col) {
  */
 bool process_record_user(uint16_t kc, keyrecord_t *rc) {
     if (rc->event.pressed) {
-        add_ripple(rc->event.key.row, rc->event.key.col);
+        macro_ripple = timer_read();
+        add_ripple_for_keyrecord(rc->event.key.row, rc->event.key.col);
     }
     switch (kc) {
         // Put all TOGGLE macros here
@@ -180,7 +203,7 @@ void matrix_scan_user(void) {
         macro_runner(&bz_macro);
         macro_pulse = timer_read();
         if (timer_elapsed(macro_ripple) >= 1500) {
-            add_ripple(bz_macro.row, bz_macro.col);
+            add_ripple_for_keyrecord(bz_macro.row, bz_macro.col);
             macro_ripple = timer_read();
         }
     }
@@ -189,7 +212,7 @@ void matrix_scan_user(void) {
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     uint8_t v = rgb_matrix_config.hsv.v;
     if (bz_macro.active) {
-        rgb_matrix_set_color(get_led_number(bz_macro.btn), RGB_RED);
+        rgb_matrix_set_color(g_led_config.matrix_co[bz_macro.row][bz_macro.col], RGB_RED);
     }
     if (get_highest_layer(layer_state) > 0) {
         uint8_t layer = get_highest_layer(layer_state);
