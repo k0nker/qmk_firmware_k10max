@@ -4,7 +4,7 @@
 
 macro_state_t bz_macro = {0};
 
-void macro_setup(macro_state_t *ma, uint16_t keycode, bool activate, uint8_t type) {
+void macro_setup(macro_state_t *ma, uint16_t keycode, bool activate, uint8_t type, uint8_t row, uint8_t col) {
     bz_macro.active = false; // Deactivate any currently active macro
     if (activate) {
         ma->btn    = keycode;
@@ -13,6 +13,8 @@ void macro_setup(macro_state_t *ma, uint16_t keycode, bool activate, uint8_t typ
         ma->delay  = 0;
         ma->timer  = timer_read();
         ma->active = true;
+        ma->row    = row;
+        ma->col    = col;
     } else {
         ma->active = false;
         ma->btn    = 0;

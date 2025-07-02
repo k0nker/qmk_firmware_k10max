@@ -34,6 +34,7 @@ ripple_t ripples[MAX_RIPPLES] = {0};
 uint16_t r = 0, g = 0, b = 0;
 
 uint16_t macro_pulse = 0;
+uint16_t macro_ripple = 0;
 
 // A table of the LED int number for each key in rgb index.
 const uint16_t PROGMEM keymap_leds[] = {
@@ -139,18 +140,18 @@ bool process_record_user(uint16_t kc, keyrecord_t *rc) {
         case BZ_Test:
             if (rc->event.pressed) {
                 if (bz_macro.active && bz_macro.btn == kc) {
-                    macro_setup(&bz_macro, kc, false, MACRO_TOGGLE);
+                    macro_setup(&bz_macro, kc, false, MACRO_TOGGLE, rc->event.key.row, rc->event.key.col);
                 } else {
-                    macro_setup(&bz_macro, kc, true, MACRO_TOGGLE);
+                    macro_setup(&bz_macro, kc, true, MACRO_TOGGLE, rc->event.key.row, rc->event.key.col);
                 }
             }
             return false;
         // Put all HOLD macros here
         case RESERVE_HOLD:
             if (rc->event.pressed) {
-                macro_setup(&bz_macro, kc, true, MACRO_HOLD);
+                macro_setup(&bz_macro, kc, true, MACRO_HOLD, rc->event.key.row, rc->event.key.col);
             } else {
-                macro_setup(&bz_macro, kc, false, MACRO_HOLD);
+                macro_setup(&bz_macro, kc, false, MACRO_HOLD, rc->event.key.row, rc->event.key.col);
             }
             return false;
         // Put all RUN ONCE macros here
@@ -158,9 +159,9 @@ bool process_record_user(uint16_t kc, keyrecord_t *rc) {
         case BZ_LOVE:
             if (rc->event.pressed) {
                 if (bz_macro.active && bz_macro.btn == kc) {
-                    macro_setup(&bz_macro, kc, false, MACRO_ONCE);
+                    macro_setup(&bz_macro, kc, false, MACRO_ONCE, rc->event.key.row, rc->event.key.col);
                 } else {
-                    macro_setup(&bz_macro, kc, true, MACRO_ONCE);
+                    macro_setup(&bz_macro, kc, true, MACRO_ONCE, rc->event.key.row, rc->event.key.col);
                 }
             }
             return false;
@@ -178,6 +179,10 @@ void matrix_scan_user(void) {
     if (bz_macro.active && timer_elapsed(macro_pulse) >= 10) {
         macro_runner(&bz_macro);
         macro_pulse = timer_read();
+        if (timer_elapsed(macro_ripple) >= 1500) {
+            add_ripple(bz_macro.row, bz_macro.col);
+            macro_ripple = timer_read();
+        }
     }
 }
 

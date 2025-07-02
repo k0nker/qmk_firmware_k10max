@@ -10,6 +10,8 @@ typedef struct {
     uint16_t btn;
     uint16_t timer;
     uint16_t delay;
+    uint8_t  row;
+    uint8_t  col;
 } macro_state_t;
 
 // Macro handler function pointer type
@@ -30,7 +32,7 @@ extern macro_state_t bz_macro;
 void macro_end_step(macro_state_t *ma, uint16_t delay, bool reset);
 bool macro_ready(macro_state_t *ma);
 void macro_runner(macro_state_t *ma);
-void macro_setup(macro_state_t *ma, uint16_t keycode, bool activate, uint8_t type);
+void macro_setup(macro_state_t *ma, uint16_t keycode, bool activate, uint8_t type, uint8_t row, uint8_t col);
 
 // Macro handler prototypes (optional, but helps with IDEs)
 void macro_BZ_Test(macro_state_t *ma);
