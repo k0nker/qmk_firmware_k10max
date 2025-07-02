@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.recipe": "xml",
+        "*.sh": "shellscript",
+        "*.py": "python",
+        "*.inc": "c",
+        "keychron_common.h": "c"
+    }
+}
